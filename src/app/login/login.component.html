@@ -1,38 +1,43 @@
 ﻿<div class="col-col-md-6 col-md-offset-3">
   <h2>登陆页面</h2>
   <form name="form" (ngSubmit)="loginForm.form.valid && login()" #loginForm="ngForm" novalidate>
+    {{loginformSubmitted}}
     <!-- 用户名 -->
-    <div class="form-group" [ngClass]="{ 'has-error': loginForm.submitted && username.invalid }">
-      <!-- 改成气泡提示 -->
+    <div class="form-group" [ngClass]="{ 'has-error': loginformSubmitted && username.invalid && !usernameIsfocus}">
+      <!-- 气泡提示 -->
       <div class="bubble-alert">
-        <div *ngIf="loginForm.submitted && username.invalid" class="help-info">请输入用户名</div>
-        <div *ngIf="!username.pristine && !validEmail && !username.invalid" class="help-info">邮箱格式不正确</div>
+        <div *ngIf="loginformSubmitted && username.invalid && !usernameIsfocus" class="help-info">请输入用户名</div>
+        <div [hidden]="username.pristine" *ngIf="username.valid && !validEmail && !usernameIsfocus" class="help-info">邮箱格式不对</div>
       </div>
       <div class="input-group">
         <span class="input-group-addon glyphicon glyphicon-user"></span>
         <input type="text"
+               (focus)="usernameFocus()"
                (blur)="email_format_authenticate(model.username)"
-               [ngStyle]="{'box-shadow':loginForm.submitted && username.invalid ? '0 0 10px #B22222':'none'}"
+               [ngStyle]="{'box-shadow':loginformSubmitted && username.invalid && !usernameIsfocus ? '0 0 10px #B22222':usernameIsfocus ? '0 0 10px #4169E1':'none'}"
                placeholder="用户名/邮箱/手机号"
                class="form-control"
                name="username"
                [(ngModel)]="model.username"
                #username="ngModel"
                required
-
-               autofocus/>
+               autofocus
+               />
       </div>
     </div>
+
+
     <!-- 密码 -->
-    <div class="form-group" [ngClass]="{ 'has-error': loginForm.submitted && password.invalid }">
-      <!-- 改成气泡提示 -->
+    <div class="form-group" [ngClass]="{ 'has-error': loginformSubmitted && password.invalid && username.valid && !passwdIsfocus}">
+      <!-- 气泡提示 -->
       <div class="bubble-alert">
-        <div *ngIf="loginForm.submitted && password.invalid" class="help-info">请输入密码</div>
+        <div *ngIf="loginformSubmitted && username.valid && password.invalid && !passwdIsfocus" class="help-info">请输入密码</div>
       </div>
       <div class="input-group">
         <span class="input-group-addon glyphicon glyphicon-lock"></span>
         <input type="password"
-               [ngStyle]="{'box-shadow':loginForm.submitted && password.invalid ? '0 0 10px #B22222':'none'}"
+               (focus)="passwdFocus()"
+               [ngStyle]="{'box-shadow':(loginformSubmitted && password.invalid && username.valid && !passwdIsfocus) ? '0 0 10px #B22222':passwdIsfocus ? '0 0 10px #4169E1':'none'}"
                placeholder="密码"
                class="form-control"
                name="password"
@@ -42,9 +47,9 @@
 
     </div>
     <div class="form-group">
-      <button type="submit" [disabled]="loading" class="btn btn-primary">登录</button>
-      <!--<img *ngIf="loading"-->
-           <!--src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>-->
+      <button type="submit" [disabled]="loading" (click)="changeloginformStatus()" class="btn btn-primary">登录</button>
+      <img *ngIf="loading"
+           src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
       <a [routerLink]="['/register']" class="btn btn-link">没有账号？去注册</a>
     </div>
   </form>
