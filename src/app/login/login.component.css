@@ -10,7 +10,8 @@
 /*  矩形 */
 .help-info {
   font: 1em "微软雅黑";
-  color: #B22222;
+  color: #fff;
+  background-color: #B22222;
   text-align: center;
   padding: 4px 15px;
   width: 130px;
@@ -42,7 +43,7 @@
   left: -7px;
   width: 0;
   height: 0;
-  border-right: 7px solid #FFF;
+  border-right: 7px solid #B22222;
   border-bottom: 4px solid transparent;
   border-top: 4px solid transparent;
 }
