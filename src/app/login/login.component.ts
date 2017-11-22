@@ -14,14 +14,14 @@ import {isUndefined} from "util";
 export class LoginComponent implements OnInit {
   user = new User();
 
-  public loading = false;  // 正在去服务器申请登陆中的状态
-  public submitted = false;  // 用户已经按下登陆键时为真
-  public validemail = true;  // email格式检查
+  public loading: boolean;  // 正在去服务器申请登陆中的状态
+  public submitted: boolean;  // 用户已经按下登陆键时为真
+  public validemail: boolean;  // email格式检查结果
 
-  public usernamefocus = true;  // 光标是否聚焦
-  public usernameblur = false;
-  public passwdfocus = false;
-  public passwdblur = false;
+  public usernamefocus: boolean;  // 光标是否聚焦
+  public usernameblur: boolean;
+  public passwdfocus: boolean;
+  public passwdblur: boolean;
 
   returnUrl: string;  // 成功登陆后返回的URL
   currentStyles: {};  // 当前username输入框的样式
@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
   // username控件的样式设置
   setCurrentStyles() {
     this.currentStyles = {
-      'box-shadow': this.usernamefocus ? '0 0 10px #4169E1' : this.invalidUsername() ? '0 0 10px #B22222' : 'none',
+      'box-shadow': this.usernamefocus && !this.submitted ? '0 0 10px #4169E1' : this.invalidUsername() ? '0 0 10px #B22222' : 'none',
     };
     return this.currentStyles;
   }
@@ -51,6 +51,13 @@ export class LoginComponent implements OnInit {
 
   // 初始化执行函数
   ngOnInit() {
+    this.loading = false;
+    this.submitted = false;
+    this.validemail = true;
+    this.usernamefocus = true;
+    this.usernameblur = false;
+    this.passwdfocus = false;
+    this.passwdblur = true;
     this.setCurrentStyles();
     this.setCurrentPasswordStyles();
     // reset login status
@@ -78,9 +85,9 @@ export class LoginComponent implements OnInit {
 
   // 查看状态，判读是否显示 气泡 邮箱格式有误
   invalidEmailFormat() {
-    if (!this.usernamefocus || this.usernameblur) {
+    if (this.usernameblur) {
       // console.log('当前值' + this.user.username);
-      if ( !( isUndefined(this.user.username) || this.user.username === '' ) && !this.validemail && !(/\s+/.test(this.user.username))) {
+      if (!( isUndefined(this.user.username) || this.user.username === '' ) && !this.validemail && !(/\s+/.test(this.user.username))) {
         return true;  // 不为空且格式不对且失去焦点且不是无效字符时  气泡显示
       } else {
         return false;  // 为空或者格式正确或者获得焦点时气泡消失
@@ -110,7 +117,7 @@ export class LoginComponent implements OnInit {
 
   // 查看状态,决定提交后是否显示空用户名的气泡
   invalidSubmitUsername() {
-    if (this.submitted && !this.usernamefocus) {
+    if (this.submitted) {
       if (isUndefined(this.user.username) || this.user.username === '' || /\s+/.test(this.user.username)) {
         return true;  // 不合法的用户名输入,显示错误提示给用户
       } else {
@@ -130,42 +137,48 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  // 查看password状态，决定报错样式和气泡提示是否显示, 只在用户名没错时才检查密码
+  // 用户提交时查看password状态，决定报错样式和气泡提示是否显示, 只在用户名没错时才检查密码
   invalidPassword() {
     if (this.submitted && !this.passwdfocus && !this.invalidUsername()) {
-      if ( (isUndefined(this.user.password) || this.user.password === '' || /\s+/.test(this.user.username)) ) {
+      if ((isUndefined(this.user.password) || this.user.password === '' || /\s+/.test(this.user.username))) {
         return true;
       } else {
         return false;
       }
-    }else {
+    } else {
       return false;
     }
   }
 
-
   // 登陆键被点击
   submit(user) {
     this.submitted = true;
-    this.passwdfocus = false;
-    this.passwdblur = true;
     this.usernamefocus = false;
     this.usernameblur = true;
-    // 当所有检查都通过了，去服务器申请登陆
-    if (!this.invalidUsername() && !this.invalidPassword()) {
+    this.passwdfocus = false;
+    this.passwdblur = true;
+    // 根据错误校验状态，关闭开启光标状态
+    if (this.invalidUsername()) {
+      this.setCurrentStyles();
+    } else if (this.invalidPassword()) {
+      this.setCurrentPasswordStyles();
+
+    } else {
+      // 当所有检查都通过了，去服务器申请登陆
       this.loading = true;
+      this.submitted = false;
       this.authenticationService.login(this.user.username, this.user.password)
         .subscribe(
           data => {
             this.router.navigate([this.returnUrl]);
+            this.loading = false;
           },
           error => {
             this.alertService.error(error);
             this.loading = false;
           });
-    } else {
-      return false;
     }
+
   }
 
 }
