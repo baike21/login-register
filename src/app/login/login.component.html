@@ -21,7 +21,6 @@
                [(ngModel)]="user.username"
                #username
                [ngStyle]="setCurrentStyles()"
-               required
                autofocus
                />
       </div>
@@ -29,21 +28,22 @@
 
 
     <!-- 密码 -->
-    <div class="form-group" [ngClass]="{ 'has-error': submitted && password.invalid && !passwdfocus}">
+    <div class="form-group" [ngClass]="{ 'has-error': invalidPassword() }">
       <!-- 气泡提示 -->
       <div class="bubble-alert">
-        <div *ngIf="submitted && password.invalid && !passwdfocus" class="help-info">请输入密码</div>
+        <div *ngIf="invalidPassword()" class="help-info">请输入密码</div>
       </div>
       <div class="input-group">
         <span class="input-group-addon glyphicon glyphicon-lock"></span>
         <input type="password"
-               (focus)="passwdFocus()"
-               [ngStyle]="{'box-shadow':(submitted && password.invalid && !passwdfocus) ? '0 0 10px #B22222':passwdfocus ? '0 0 10px #4169E1':'none'}"
                placeholder="密码"
                class="form-control"
+               (focus)="passwdFocus()"
                name="password"
                [(ngModel)]="user.password"
-               #password="ngModel" required/>
+               #password="ngModel"
+               [ngStyle]="setCurrentPasswordStyles()"
+               />
       </div>
 
     </div>

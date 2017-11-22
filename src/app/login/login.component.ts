@@ -24,7 +24,8 @@ export class LoginComponent implements OnInit {
   public passwdblur = false;
 
   returnUrl: string;  // 成功登陆后返回的URL
-  currentStyles: {};  // 当前输入框的样式
+  currentStyles: {};  // 当前username输入框的样式
+  currentPasswordStyles: {};  // 当前password输入框的样式ß
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -40,8 +41,18 @@ export class LoginComponent implements OnInit {
     return this.currentStyles;
   }
 
+  // password控件的样式设置
+  setCurrentPasswordStyles() {
+    this.currentPasswordStyles = {
+      'box-shadow': this.passwdfocus ? '0 0 10px #4169E1' : this.invalidPassword() ? '0 0 10px #B22222' : 'none',
+    };
+    return this.currentPasswordStyles;
+  }
+
+  // 初始化执行函数
   ngOnInit() {
     this.setCurrentStyles();
+    this.setCurrentPasswordStyles();
     // reset login status
     this.authenticationService.logout();
 
@@ -90,10 +101,10 @@ export class LoginComponent implements OnInit {
     this.usernamefocus = false;
     this.usernameblur = true;
     this.submitted = false;
-    this.setCurrentStyles();
+    this.setCurrentPasswordStyles();
   }
 
-  // 查看状态,决定提交后是否显示空用户名的气泡,并更新当前输入框样式
+  // 查看状态,决定提交后是否显示空用户名的气泡
   invalidSubmitUsername() {
     if (this.submitted && !this.usernamefocus) {
       if (isUndefined(this.user.username) || this.user.username === '' || /\s+/.test(this.user.username)) {
@@ -106,7 +117,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  // 查看状态，不合法的用户名返回真（包括邮箱格式不正确，空格缩进换行分页等无效字符）
+  // 查看状态，不合法的用户名返回真（包括邮箱格式不正确，空格缩进换行分页等无效字符）,并更新当前输入框样式
   invalidUsername() {
     if (this.invalidEmailFormat() || this.invalidSubmitUsername()) {
       return true;
@@ -115,9 +126,18 @@ export class LoginComponent implements OnInit {
     }
   }
 
-
-  //
-  //
+  // 查看password状态，决定报错样式和气泡提示是否显示, 只在用户名没错时才检查密码
+  invalidPassword() {
+    if (this.submitted && !this.passwdfocus && !this.invalidUsername()) {
+      if ( (isUndefined(this.user.password) || this.user.password === '' || /\s+/.test(this.user.username)) ) {
+        return true;
+      } else {
+        return false;
+      }
+    }else {
+      return false;
+    }
+  }
 
 
   // 登陆键被点击
@@ -127,8 +147,8 @@ export class LoginComponent implements OnInit {
     this.passwdblur = true;
     this.usernamefocus = false;
     this.usernameblur = true;
-
-    if (!this.invalidUsername()) {
+    // 当所有检查都通过了，去服务器申请登陆
+    if (!this.invalidUsername() && !this.invalidPassword()) {
       this.loading = true;
       this.authenticationService.login(this.user.username, this.user.password)
         .subscribe(
