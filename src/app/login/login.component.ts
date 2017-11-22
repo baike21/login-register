@@ -78,11 +78,15 @@ export class LoginComponent implements OnInit {
 
   // 查看状态，判读是否显示 气泡 邮箱格式有误
   invalidEmailFormat() {
-    // console.log('当前值' + this.user.username);
-    if ( !( isUndefined(this.user.username) || this.user.username === '' ) && !this.validemail && this.usernameblur && !(/\s+/.test(this.user.username))) {
-      return true;  // 不为空且格式不对且失去焦点且不是无效字符时  气泡显示
+    if (!this.usernamefocus || this.usernameblur) {
+      // console.log('当前值' + this.user.username);
+      if ( !( isUndefined(this.user.username) || this.user.username === '' ) && !this.validemail && !(/\s+/.test(this.user.username))) {
+        return true;  // 不为空且格式不对且失去焦点且不是无效字符时  气泡显示
+      } else {
+        return false;  // 为空或者格式正确或者获得焦点时气泡消失
+      }
     } else {
-      return false;  // 为空或者格式正确或者获得焦点时气泡消失
+      return false;
     }
   }
 
