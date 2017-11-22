@@ -2,7 +2,7 @@
 
 <div class="col-col-md-6 col-md-offset-3">
   <h2>登陆页面</h2>
-  <form name="form" (ngSubmit)="submit(user)" #form="ngForm" novalidate>
+  <form name="form" (ngSubmit)="submit()" #form="ngForm" novalidate>
     <!-- 用户名 -->
     <div class="form-group" [ngClass]="{ 'has-error': invalidUsername() }">
       <!-- 气泡提示 -->
@@ -16,7 +16,7 @@
                placeholder="用户名/邮箱/手机号"
                class="form-control"
                (focus)="usernameFocus()"
-               (blur)="checkEmail(username.value)"
+               (blur)="blurEmailCheck()"
                name="username"
                [(ngModel)]="user.username"
                #username

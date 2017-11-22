@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit {
   // password控件的样式设置
   setCurrentPasswordStyles() {
     this.currentPasswordStyles = {
-      'box-shadow': this.passwdfocus ? '0 0 10px #4169E1' : this.invalidPassword() ? '0 0 10px #B22222' : 'none',
+      'box-shadow': this.passwdfocus && !this.submitted ? '0 0 10px #4169E1' : this.invalidPassword() ? '0 0 10px #B22222' : 'none',
     };
     return this.currentPasswordStyles;
   }
@@ -67,70 +67,82 @@ export class LoginComponent implements OnInit {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
-  // blur时进行邮箱格式校验
-  checkEmail(raw_email: string) {
-    this.usernamefocus = false;  // 光标移走后开验证
-    this.usernameblur = true;  // 光标移走了
-    // console.log('输入的邮箱是' + raw_email);
-    const emailRegex = /^[A-Za-z0-9]+([-_.][A-Za-z0-9]+)*@([A-Za-z0-9]+[-.])+[A-Za-z0-9]{2,5}$/;
-    if (emailRegex.test(raw_email)) {
-      this.validemail = true;  // 格式正确
-      this.setCurrentStyles();
-    } else {
-      this.validemail = false;
-      this.setCurrentStyles();
-    }
-    // console.log('当前状态email格式判断' + this.validemail);
-  }
-
-  // 查看状态，判读是否显示 气泡 邮箱格式有误
-  invalidEmailFormat() {
-    if (this.usernameblur) {
-      // console.log('当前值' + this.user.username);
-      if (!( isUndefined(this.user.username) || this.user.username === '' ) && !this.validemail && !(/\s+/.test(this.user.username))) {
-        return true;  // 不为空且格式不对且失去焦点且不是无效字符时  气泡显示
-      } else {
-        return false;  // 为空或者格式正确或者获得焦点时气泡消失
-      }
-    } else {
-      return false;
-    }
-  }
-
   // 光标聚焦到username输入框的事件
   usernameFocus() {
     this.usernamefocus = true;
     this.usernameblur = false;
     this.passwdfocus = false;
+    this.passwdblur = true;
     this.submitted = false;
-    this.setCurrentStyles();
+    // this.setCurrentStyles();
   }
 
   // 光标聚焦到password输入框的事件
   passwdFocus() {
     this.passwdfocus = true;
+    this.passwdblur = false;
     this.usernamefocus = false;
     this.usernameblur = true;
     this.submitted = false;
-    this.setCurrentPasswordStyles();
+    // this.setCurrentPasswordStyles();
   }
+
+  // 邮箱格式校验
+  private checkEmail(raw_email: string) {
+    const emailRegex = /^[A-Za-z0-9]+([-_.][A-Za-z0-9]+)*@([A-Za-z0-9]+[-.])+[A-Za-z0-9]{2,5}$/;
+    if (emailRegex.test(raw_email)) {
+      return true;  // 合法的邮箱格式
+    } else {
+      return false;
+    }
+  }
+
+  // blur事件,做控件状态变更和邮箱格式校验
+  blurEmailCheck() {
+    this.usernameblur = true;
+    this.usernamefocus = false;
+    if (this.checkEmail(this.user.username)) {
+      return true;
+    }else {
+      return false;
+    }
+  }
+
+  // 查看状态，决定是否显示邮箱错误的气泡
+  invalidEmailFormat() {
+    // 用户什么都没输或者输入了又删掉了（即控件内的值不为空），且没有输入一堆无效字符
+    if (!( isUndefined(this.user.username) || this.user.username === '' ) && !(/\s+/.test(this.user.username))) {
+      // 检查一下email格式
+      if (this.checkEmail(this.user.username) || this.usernamefocus) {
+
+        return false;  // 格式正确或者有光标在 气泡不显示
+      } else {
+        return true;  // 格式不对且失去焦点时 气泡显示
+      }
+    } else {
+
+      return false;
+    }
+  }
+
 
   // 查看状态,决定提交后是否显示空用户名的气泡
   invalidSubmitUsername() {
     if (this.submitted) {
-      if (isUndefined(this.user.username) || this.user.username === '' || /\s+/.test(this.user.username)) {
+      if ( isUndefined(this.user.username) || this.user.username === '' || /\s+/.test(this.user.username) ) {
         return true;  // 不合法的用户名输入,显示错误提示给用户
       } else {
         return false;
       }
     } else {
-      return false;  //  用户没点提交键，不显示
+
+      return false;  // 用户没点提交键，不显示
     }
   }
 
   // 查看状态，不合法的用户名返回真（包括邮箱格式不正确，空格缩进换行分页等无效字符）,并更新当前输入框样式
   invalidUsername() {
-    if (this.invalidEmailFormat() || this.invalidSubmitUsername()) {
+    if ( this.invalidEmailFormat() || this.invalidSubmitUsername() ) {
       return true;
     } else {
       return false;
@@ -151,7 +163,7 @@ export class LoginComponent implements OnInit {
   }
 
   // 登陆键被点击
-  submit(user) {
+  submit() {
     this.submitted = true;
     this.usernamefocus = false;
     this.usernameblur = true;
@@ -159,10 +171,9 @@ export class LoginComponent implements OnInit {
     this.passwdblur = true;
     // 根据错误校验状态，关闭开启光标状态
     if (this.invalidUsername()) {
-      this.setCurrentStyles();
+      console.log('用户名通不过校验');
     } else if (this.invalidPassword()) {
-      this.setCurrentPasswordStyles();
-
+      console.log('密码通不过校验');
     } else {
       // 当所有检查都通过了，去服务器申请登陆
       this.loading = true;
