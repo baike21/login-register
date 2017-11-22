@@ -114,7 +114,6 @@ export class LoginComponent implements OnInit {
     if (!( isUndefined(this.user.username) || this.user.username === '' ) && !(/\s+/.test(this.user.username))) {
       // 检查一下email格式
       if (this.checkEmail(this.user.username) || this.usernamefocus) {
-
         return false;  // 格式正确或者有光标在 气泡不显示
       } else {
         return true;  // 格式不对且失去焦点时 气泡显示
@@ -149,10 +148,10 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  // 用户提交时查看password状态，决定报错样式和气泡提示是否显示, 只在用户名没错时才检查密码
+  // 用户提交时查看password状态，决定气泡提示是否显示, 只在用户名没错时才检查密码
   invalidPassword() {
     if (this.submitted && !this.passwdfocus && !this.invalidUsername()) {
-      if ((isUndefined(this.user.password) || this.user.password === '' || /\s+/.test(this.user.username))) {
+      if ((isUndefined(this.user.password) || this.user.password === '' || /\s+/.test(this.user.password))) {
         return true;
       } else {
         return false;
