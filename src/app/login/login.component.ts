@@ -134,7 +134,6 @@ export class LoginComponent implements OnInit {
         return false;
       }
     } else {
-
       return false;  // 用户没点提交键，不显示
     }
   }
