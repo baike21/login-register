@@ -49,6 +49,15 @@ export class LoginComponent implements OnInit {
     return this.currentPasswordStyles;
   }
 
+  // 当前输入框样式监听
+  invalidUsername() {
+    if (this.invalidFormat() || this.invalidSubmitUsername()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   // 初始化执行函数
   ngOnInit() {
     this.loading = false;
@@ -74,7 +83,7 @@ export class LoginComponent implements OnInit {
     this.passwdfocus = false;
     this.passwdblur = true;
     this.submitted = false;
-    // this.setCurrentStyles();
+
   }
 
   // 光标聚焦到password输入框的事件
@@ -84,34 +93,43 @@ export class LoginComponent implements OnInit {
     this.usernamefocus = false;
     this.usernameblur = true;
     this.submitted = false;
-    // this.setCurrentPasswordStyles();
   }
 
   // 邮箱格式校验
   private checkEmail(raw_email: string) {
-    const emailRegex = /^[A-Za-z0-9]+([-_.][A-Za-z0-9]+)*@([A-Za-z0-9]+[-.])+[A-Za-z0-9]{2,5}$/;
+    // 格式检测对字符串前后的无效字符例如空格是容忍的
+    const emailRegex = /^\s*[A-Za-z0-9]+([-_.][A-Za-z0-9]+)*@([A-Za-z0-9]+[-.])+[A-Za-z0-9]{2,5}\s*$/;
     if (emailRegex.test(raw_email)) {
       return true;  // 合法的邮箱格式
     } else {
+      console.log('invalid email address');
       return false;
     }
   }
 
-  // blur事件,做控件状态变更和邮箱格式校验
-  blurEmailCheck() {
+  // 手机号格式校验 1** ********
+  private checkPhone(raw_phone: string) {
+    // 根据移动联通电信三大运营商的号码 正则表达式前3位随时保持更新 后面是8位数字
+    const PhoneReg = /^\s*((13[0-9])|(14[5|7])|(15([0|3]|[5-9]))|(18[0,5-9])|(17[0-9]))\d{8}\s*$/;
+    if (PhoneReg.test(raw_phone)) {
+      return true;  // 合法手机号
+    } else {
+      console.log('invalid phone number');
+      return false;
+    }
+  }
+
+  // 用户名blur事件,只关心描述控件的状态位
+  usernameBlur() {
     this.usernameblur = true;
     this.usernamefocus = false;
-    if (this.checkEmail(this.user.username)) {
-      return true;
-    }else {
-      return false;
-    }
   }
 
-  // 查看状态，决定是否显示邮箱错误的气泡
+  // 判别邮箱格式，只关心绑定的数据
   invalidEmailFormat() {
-    // 用户什么都没输或者输入了又删掉了（即控件内的值不为空），且没有输入一堆无效字符
-    if (!( isUndefined(this.user.username) || this.user.username === '' ) && !(/\s+/.test(this.user.username))) {
+    // 先做输入值非空检查
+    // 用户什么都没输(pristine)或者输入了又删掉了（novalue）, 或者输入一串空格之类的无效字符，检测器都不进行格式检查
+    if (!( isUndefined(this.user.username) || this.user.username === '' ) && !(/^\s+$/.test(this.user.username))) {
       // 检查一下email格式
       if (this.checkEmail(this.user.username) || this.usernamefocus) {
         return false;  // 格式正确或者有光标在 气泡不显示
@@ -119,31 +137,48 @@ export class LoginComponent implements OnInit {
         return true;  // 格式不对且失去焦点时 气泡显示
       }
     } else {
-
       return false;
     }
   }
 
 
+  // 判别phone格式是否错误
+  invalidPhoneFormat() {
+    if (!( isUndefined(this.user.username) || this.user.username === '' ) && !(/^\s+$/.test(this.user.username))) {
+      // 检查一下phone格式
+      if (this.checkPhone(this.user.username) || this.usernamefocus) {
+        return false;  // phone格式正确,光标定位在控件上时认为处于待修改状态，也不显示
+      } else {
+        return true;  // phone格式不对
+      }
+    } else {
+      return false;
+    }
+  }
+
+  // 查询状态，决定是否显示格式错误的气泡
+  invalidFormat() {
+    // 两种格式错误
+    if (!this.invalidEmailFormat() || !this.invalidPhoneFormat()) {
+      console.log('不认为格式有误');
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   // 查看状态,决定提交后是否显示空用户名的气泡
   invalidSubmitUsername() {
     if (this.submitted) {
-      if ( isUndefined(this.user.username) || this.user.username === '' || /\s+/.test(this.user.username) ) {
+      // 非空检查
+      if (isUndefined(this.user.username) || this.user.username === '' || /^\s+$/.test(this.user.username)) {
+        console.log('提交的用户名为空');
         return true;  // 不合法的用户名输入,显示错误提示给用户
       } else {
         return false;
       }
     } else {
       return false;  // 用户没点提交键，不显示
-    }
-  }
-
-  // 查看状态，不合法的用户名返回真（包括邮箱格式不正确，空格缩进换行分页等无效字符）,并更新当前输入框样式
-  invalidUsername() {
-    if ( this.invalidEmailFormat() || this.invalidSubmitUsername() ) {
-      return true;
-    } else {
-      return false;
     }
   }
 

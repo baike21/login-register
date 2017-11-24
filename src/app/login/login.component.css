@@ -6,7 +6,7 @@
   height: 30px;
   display: block;
   float: right;
-  position: absolute;
+  /*position: absolute; 调整气泡显示位置时定义*/
 }
 /*  矩形 */
 .help-info {
@@ -15,7 +15,7 @@
   background-color: #B22222;
   text-align: center;
   padding: 4px 15px;
-  width: 120px;
+  width: 150px;/* 宽度根据字符数和大小自己定义 */
   height: 30px;
   border: 1px solid #B22222;
   border-radius: 4px;
@@ -28,7 +28,7 @@
 .help-info:before {
   content: '';
   position: absolute;
-  top: 8px;
+  top: 9px;
   left: -8px;
   width: 0;
   height: 0;
@@ -40,7 +40,7 @@
 .help-info:after {
   content: '';
   position: absolute;
-  top: 9px;
+  top: 10px;
   left: -7px;
   width: 0;
   height: 0;

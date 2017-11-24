@@ -7,16 +7,16 @@
     <div class="form-group" [ngClass]="{ 'has-error': invalidUsername() }">
       <!-- 气泡提示 -->
       <div class="bubble-alert">
-        <div *ngIf="invalidSubmitUsername()" class="help-info">请输入用户名</div>
-        <div *ngIf="invalidEmailFormat()" class="help-info">邮箱格式不对</div>
+        <div *ngIf="invalidSubmitUsername()" class="help-info">您忘了输入用户名</div>
+        <div *ngIf="invalidFormat()" class="help-info">用户名格式不对哦</div>
       </div>
       <div class="input-group">
         <span class="input-group-addon glyphicon glyphicon-user"></span>
         <input type="text"
-               placeholder="用户名/邮箱/手机号"
+               placeholder="手机号/邮箱"
                class="form-control"
                (focus)="usernameFocus()"
-               (blur)="blurEmailCheck()"
+               (blur)="usernameBlur()"
                name="username"
                [(ngModel)]="user.username"
                #username
@@ -31,7 +31,7 @@
     <div class="form-group" [ngClass]="{ 'has-error': invalidPassword() }">
       <!-- 气泡提示 -->
       <div class="bubble-alert">
-        <div *ngIf="invalidPassword()" class="help-info">请输入密码</div>
+        <div *ngIf="invalidPassword()" class="help-info">您忘了输入密码</div>
       </div>
       <div class="input-group">
         <span class="input-group-addon glyphicon glyphicon-lock"></span>
