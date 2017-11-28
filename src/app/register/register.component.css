@@ -1,0 +1,51 @@
+.glyphicon {
+  top:0;
+}
+.bubble-alert {
+  width: 140px;
+  height: 30px;
+  display: block;
+  float: right;
+  /*position: absolute; 调整气泡显示位置时定义*/
+}
+/*  矩形 */
+.help-info {
+  font: 0.9em "微软雅黑";
+  color: #fff;
+  background-color: #B22222;
+  text-align: center;
+  padding: 4px 15px;
+  width: 180px;/* 宽度根据字符数和大小自己定义 */
+  height: 30px;
+  border: 1px solid #B22222;
+  border-radius: 4px;
+  margin-left: 15px;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+/*  上下透明，右边框为8px  */
+.help-info:before {
+  content: '';
+  position: absolute;
+  top: 9px;
+  left: -8px;
+  width: 0;
+  height: 0;
+  border-right: 8px solid #B22222;
+  border-bottom: 5px solid transparent;
+  border-top: 5px solid transparent;
+}
+/*  上下透明，右边框为7px且在:before伪元素三角形的基础上，向右，下移动了1px  */
+.help-info:after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: -7px;
+  width: 0;
+  height: 0;
+  border-right: 7px solid #B22222;
+  border-bottom: 4px solid transparent;
+  border-top: 4px solid transparent;
+}
+
