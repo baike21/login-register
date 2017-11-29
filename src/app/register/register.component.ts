@@ -1,10 +1,10 @@
 ﻿import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {AlertService, UserService} from '../_services/index';
-import {isUndefined} from "util";
+import {isUndefined} from 'util';
 
 @Component({
-  selector: 'app-register-container',
+  selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
 })
@@ -52,21 +52,13 @@ export class RegisterComponent implements OnInit {
     };
     return this.currentPasswordStyles;
   }
+
   // 查看comfirm password控件的样式设置
   setCurrentComfirmPasswordStyles() {
     this.currentComfirmPasswordStyles = {
-      'box-shadow': this.cpwdfocus && !this.submitted ? '0 0 10px #4169E1' : this.invalidComfirmPassword() ? '0 0 10px #B22222' : 'none',
+      'box-shadow': this.cpwdfocus && !this.submitted ? '0 0 10px #4169E1' : this.invalidConfirmPassword() ? '0 0 10px #B22222' : 'none',
     };
-    return this.currentPasswordStyles;
-  }
-
-  // 当前输入框样式监听
-  invalidUsername() {
-    if (this.invalidFormat() || this.invalidSubmitUsername()) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.currentComfirmPasswordStyles;
   }
 
   // 初始化执行函数
@@ -107,23 +99,29 @@ export class RegisterComponent implements OnInit {
     this.usernameblur = true;
     this.submitted = false;
   }
+
   // 光标聚焦到confirm password输入框的事件
   confirmpasswdFocus() {
-    this.pwdfocus = true;
+    this.cpwdfocus = true;
     this.pwdblur = false;
-    this.cpwdfocus = false;
-    this.cpwdblur = true;
+    this.pwdfocus = false;
+    this.pwdblur = true;
     this.usernamefocus = false;
     this.usernameblur = true;
     this.submitted = false;
   }
 
-  // 用户名blur事件,只关心描述控件的状态位
+  // 用户名blur事件,只关心描述自身的状态位
   usernameBlur() {
     this.usernameblur = true;
     this.usernamefocus = false;
   }
 
+  // Confirm Password Blur Event
+  confirmpasswdBlur() {
+    this.cpwdblur = true;
+    this.cpwdfocus = false;
+  }
 
   // 邮箱格式校验
   private checkEmail(raw_email: string): boolean {
@@ -149,14 +147,13 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-
   // 判别邮箱格式，只关心绑定的数据
   invalidEmailFormat(): boolean {
     // 先做输入值非空检查
     // 用户什么都没输(pristine)或者输入了又删掉了（novalue）, 或者输入一串空格之类的无效字符，检测器都不进行格式检查
-    if (!( isUndefined(this.user.username) || this.user.username === '' ) && !(/^\s+$/.test(this.user.username))) {
+    if (!( isUndefined(this.username) || this.username === '' ) && !(/^\s+$/.test(this.username))) {
       // 检查一下email格式
-      if (this.checkEmail(this.user.username) || this.usernamefocus) {
+      if (this.checkEmail(this.username) || this.usernamefocus) {
         return false;  // email格式正确，或者光标定位在控件上时认为处于待修改状态 气泡也不显示
       } else {
         return true;  // email格式不对且失去焦点时 气泡显示
@@ -166,12 +163,11 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-
   // 判别phone格式是否错误
   invalidPhoneFormat(): boolean {
-    if (!( isUndefined(this.user.username) || this.user.username === '' ) && !(/^\s+$/.test(this.user.username))) {
+    if (!( isUndefined(this.username) || this.username === '' ) && !(/^\s+$/.test(this.username))) {
       // 检查一下phone格式
-      if (this.checkPhone(this.user.username) || this.usernamefocus) {
+      if (this.checkPhone(this.username) || this.usernamefocus) {
         return false;  // phone格式正确,光标定位在控件上时认为处于待修改状态，也不显示
       } else {
         return true;  // phone格式不对
@@ -196,7 +192,7 @@ export class RegisterComponent implements OnInit {
   invalidSubmitUsername(): boolean {
     if (this.submitted) {
       // 非空检查
-      if (isUndefined(this.user.username) || this.user.username === '' || /^\s+$/.test(this.user.username)) {
+      if (isUndefined(this.username) || this.username === '' || /^\s+$/.test(this.username)) {
         // console.log('提交的用户名为空');
         return true;  // 不合法的用户名输入,显示错误提示给用户
       } else {
@@ -207,10 +203,19 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  // 用户提交时查看password状态，决定气泡提示是否显示, 只在用户名没错时才检查密码
+  // 当前username输入框样式监听
+  invalidUsername() {
+    if (this.invalidFormat() || this.invalidSubmitUsername()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // 用户提交时查看password状态，决定气泡提示是否显示, 只在用户名没错时才检查密码, 密码不允许存在空格等无效字符
   invalidPassword(): boolean {
-    if (this.submitted && !this.passwdfocus && !this.invalidUsername()) {
-      if ((isUndefined(this.password) || this.password === '' || /\s+/.test(this.user.password))) {
+    if (this.submitted && !this.pwdfocus && !this.invalidUsername()) {
+      if ((isUndefined(this.password) || this.password === '' || /\s+/.test(this.password))) {
         return true;
       } else {
         return false;
@@ -219,32 +224,75 @@ export class RegisterComponent implements OnInit {
       return false;
     }
   }
-  // check if the two passwords are same
-  differentPassword(): boolean {
 
+  // blur check if the two passwords are the same
+  differentPassword(): boolean {
+    // not empty and not include useless character
+    if (!( isUndefined(this.password) || this.password === '' ) && !(/\s+/.test(this.password))) {
+      if (!( isUndefined(this.confirmpassword) || this.confirmpassword === '' ) && !(/\s+/.test(this.confirmpassword))) {
+        // judge value
+        if (!this.cpwdfocus && (this.password !== this.confirmpassword)) {
+          return true;
+        } else {
+          return false;  // two passwords are not null and they are the same
+        }
+      } else {
+        return false;  // confirm password is empty
+      }
+    } else {
+      return false;  // password is empty
+    }
   }
 
-  // // Ask server database to check if the username is duplicate
-  // duplicateUsername(raw_username: string): boolean {
-  //
-  //   return true;  // is duplicate ,please change a username to register
-  //
-  // }
+  // 空和无效字符的检查 ConfirmPassword
+  invalidConfirmPassword(): boolean {
+    if (this.submitted && !this.cpwdfocus && !this.invalidUsername() && !this.invalidPassword()) {
+      if ((isUndefined(this.confirmpassword) || this.confirmpassword === '' || /\s+/.test(this.confirmpassword))) {
+        return true;  // null confirm password ,show bubble alert
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  // judge two passwords
+  invalidTwoPassword(): boolean {
+    if (this.invalidPassword() || this.invalidConfirmPassword() || !this.differentPassword()) {
+      return true;
+    } else {
+      return false;  // all right
+    }
+  }
 
   // go to register
   register() {
-    this.loading = true;
+    this.submitted = true;
+    this.usernamefocus = false;
+    this.usernameblur = true;
+    this.pwdfocus = false;
+    this.pwdblur = true;
+    this.cpwdfocus = false;
+    this.cpwdblur = true;
+    if (this.invalidUsername()) {
+      console.log('用户名通不过校验');
+    } else if (this.invalidTwoPassword()) {
+      console.log('密码通不过校验');
+    } else {
+      this.loading = true;
+      this.model = {'username': this.username, 'password': this.password};
+      this.userService.create(this.model)
+        .subscribe(
+          data => {
+            this.alertService.success('注册成功', true);
+            this.router.navigate(['/login']);
+          },
+          error => {
+            this.alertService.error(error);
+            this.loading = false;
+          });
+    }
 
-    this.model = {'username': this.username, 'password': this.password};
-    this.userService.create(this.model)
-      .subscribe(
-        data => {
-          this.alertService.success('注册成功', true);
-          this.router.navigate(['/login']);
-        },
-        error => {
-          this.alertService.error(error);
-          this.loading = false;
-        });
   }
 }

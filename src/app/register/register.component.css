@@ -2,7 +2,7 @@
   top:0;
 }
 .bubble-alert {
-  width: 140px;
+  width: 180px;
   height: 30px;
   display: block;
   float: right;
@@ -15,7 +15,7 @@
   background-color: #B22222;
   text-align: center;
   padding: 4px 15px;
-  width: 180px;/* 宽度根据字符数和大小自己定义 */
+  width: 150px;/* 宽度根据字符数和大小自己定义 */
   height: 30px;
   border: 1px solid #B22222;
   border-radius: 4px;

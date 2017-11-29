@@ -1,12 +1,11 @@
-﻿<div class="col-md-6 col-md-offset-3">
+﻿<div class="col-md-6 col-md-offset-3 col-lg-9 col-lg-offset-5">
   <h2>注册页面</h2>
-  <form name="form" (ngSubmit)="register()" #f="ngForm" novalidate>
+  <form name="form" (ngSubmit)="register()" novalidate>
     <!-- username -->
     <div class="form-group" [ngClass]="{ 'has-error': invalidUsername() }">
       <div class="bubble-alert">
-        <div *ngIf="invalidSubmitUsername()" class="help-info">您忘了输入用户名</div>
+        <div *ngIf="invalidSubmitUsername()" class="help-info">用户名不能为空</div>
         <div *ngIf="invalidFormat()" class="help-info">用户名格式不对哦</div>
-        <!--<div *ngIf="duplicateUsername()" class="help-info">用户名重复,请换一个</div>-->
       </div>
       <div class="input-group">
         <span class="input-group-addon glyphicon glyphicon-user"></span>
@@ -26,7 +25,7 @@
     <!-- Password -->
     <div class="form-group" [ngClass]="{ 'has-error': invalidPassword() }">
       <div class="bubble-alert">
-        <div *ngIf="invalidPassword()" class="help-info">您忘了输入密码</div>
+        <div *ngIf="invalidPassword()" class="help-info">密码不能为空或无效字符</div>
       </div>
       <div class="input-group">
         <span class="input-group-addon glyphicon glyphicon-lock"></span>
@@ -41,9 +40,9 @@
     </div>
 
     <!-- Confirm Password -->
-    <div class="form-group" [ngClass]="{ 'has-error': invalidComfirmPassword() }">
+    <div class="form-group" [ngClass]="{ 'has-error': invalidConfirmPassword() }">
       <div class="bubble-alert">
-        <div *ngIf="invalidPassword()" class="help-info">您忘了输入密码</div>
+        <div *ngIf="invalidConfirmPassword()" class="help-info">密码不能为空或无效字符</div>
         <div *ngIf="differentPassword()" class="help-info">两次密码不一致</div>
       </div>
       <div class="input-group">
@@ -60,7 +59,7 @@
     </div>
 
     <div class="form-group">
-      <button [disabled]="loading" class="btn btn-primary">注册</button>
+      <button type="submit" [disabled]="loading" class="btn btn-primary">注册</button>
       <img *ngIf="loading"
            src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
       <a [routerLink]="['/login']" class="btn btn-link">已有账号？去登陆</a>

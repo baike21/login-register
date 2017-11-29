@@ -1,18 +1,18 @@
 ﻿import {Component, OnInit} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {User} from '../_models/user';
 import {AlertService, AuthenticationService} from '../_services/index';
-import {isUndefined} from "util";
-
+import {isUndefined} from 'util';
 
 @Component({
-  selector: 'app-login-container',
+  selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 
 export class LoginComponent implements OnInit {
-  user = new User();  // new user account
+  // local username, password, confirmpassword
+  private username: string;
+  private password: string;
   // component's status flags
   private loading: boolean;  // 正在去服务器申请登陆中的状态
   private submitted: boolean;  // 用户已经按下登陆键时为真
@@ -126,9 +126,9 @@ export class LoginComponent implements OnInit {
   invalidEmailFormat(): boolean {
     // 先做输入值非空检查
     // 用户什么都没输(pristine)或者输入了又删掉了（novalue）, 或者输入一串空格之类的无效字符，检测器都不进行格式检查
-    if (!( isUndefined(this.user.username) || this.user.username === '' ) && !(/^\s+$/.test(this.user.username))) {
+    if (!( isUndefined(this.username) || this.username === '' ) && !(/^\s+$/.test(this.username))) {
       // 检查一下email格式
-      if (this.checkEmail(this.user.username) || this.usernamefocus) {
+      if (this.checkEmail(this.username) || this.usernamefocus) {
         return false;  // email格式正确，或者光标定位在控件上时认为处于待修改状态 气泡也不显示
       } else {
         return true;  // email格式不对且失去焦点时 气泡显示
@@ -141,9 +141,9 @@ export class LoginComponent implements OnInit {
 
   // 判别phone格式是否错误
   invalidPhoneFormat(): boolean {
-    if (!( isUndefined(this.user.username) || this.user.username === '' ) && !(/^\s+$/.test(this.user.username))) {
+    if (!( isUndefined(this.username) || this.username === '' ) && !(/^\s+$/.test(this.username))) {
       // 检查一下phone格式
-      if (this.checkPhone(this.user.username) || this.usernamefocus) {
+      if (this.checkPhone(this.username) || this.usernamefocus) {
         return false;  // phone格式正确,光标定位在控件上时认为处于待修改状态，也不显示
       } else {
         return true;  // phone格式不对
@@ -168,7 +168,7 @@ export class LoginComponent implements OnInit {
   invalidSubmitUsername(): boolean {
     if (this.submitted) {
       // 非空检查
-      if (isUndefined(this.user.username) || this.user.username === '' || /^\s+$/.test(this.user.username)) {
+      if (isUndefined(this.username) || this.username === '' || /^\s+$/.test(this.username)) {
         // console.log('提交的用户名为空');
         return true;  // 不合法的用户名输入,显示错误提示给用户
       } else {
@@ -182,7 +182,7 @@ export class LoginComponent implements OnInit {
   // 用户提交时查看password状态，决定气泡提示是否显示, 只在用户名没错时才检查密码
   invalidPassword(): boolean {
     if (this.submitted && !this.passwdfocus && !this.invalidUsername()) {
-      if ((isUndefined(this.user.password) || this.user.password === '' || /\s+/.test(this.user.password))) {
+      if ((isUndefined(this.password) || this.password === '' || /\s+/.test(this.password))) {
         return true;
       } else {
         return false;
@@ -208,7 +208,7 @@ export class LoginComponent implements OnInit {
       // 当所有检查都通过了，去服务器申请登陆
       this.loading = true;
       this.submitted = false;
-      this.authenticationService.login(this.user.username, this.user.password)
+      this.authenticationService.login(this.username, this.password)
         .subscribe(
           data => {
             this.router.navigate([this.returnUrl]);

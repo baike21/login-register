@@ -1,8 +1,8 @@
 ﻿
 
-<div class="col-col-md-6 col-md-offset-3">
+<div class="col-md-6 col-md-offset-3 col-lg-9 col-lg-offset-5">
   <h2>登陆页面</h2>
-  <form name="form" (ngSubmit)="login()" #form="ngForm" novalidate>
+  <form name="form" (ngSubmit)="login()" novalidate>
     <!-- 用户名 -->
     <div class="form-group" [ngClass]="{ 'has-error': invalidUsername() }">
       <!-- 气泡提示 -->
@@ -18,7 +18,7 @@
                (focus)="usernameFocus()"
                (blur)="usernameBlur()"
                name="username"
-               [(ngModel)]="user.username"
+               [(ngModel)]="username"
                #username
                [ngStyle]="setCurrentStyles()"
                autofocus />
@@ -30,7 +30,7 @@
     <div class="form-group" [ngClass]="{ 'has-error': invalidPassword() }">
       <!-- 气泡提示 -->
       <div class="bubble-alert">
-        <div *ngIf="invalidPassword()" class="help-info">您忘了输入密码</div>
+        <div *ngIf="invalidPassword()" class="help-info">密码不能为空或无效字符</div>
       </div>
       <div class="input-group">
         <span class="input-group-addon glyphicon glyphicon-lock"></span>
@@ -39,7 +39,7 @@
                class="form-control"
                (focus)="passwdFocus()"
                name="password"
-               [(ngModel)]="user.password"
+               [(ngModel)]="password"
                #password="ngModel"
                [ngStyle]="setCurrentPasswordStyles()"
                />
