@@ -259,7 +259,7 @@ export class RegisterComponent implements OnInit {
 
   // judge two passwords
   invalidTwoPassword(): boolean {
-    if (this.invalidPassword() || this.invalidConfirmPassword() || !this.differentPassword()) {
+    if (this.invalidPassword() || this.invalidConfirmPassword() || this.differentPassword()) {
       return true;
     } else {
       return false;  // all right
@@ -277,22 +277,28 @@ export class RegisterComponent implements OnInit {
     this.cpwdblur = true;
     if (this.invalidUsername()) {
       console.log('用户名通不过校验');
-    } else if (this.invalidTwoPassword()) {
-      console.log('密码通不过校验');
     } else {
-      this.loading = true;
-      this.model = {'username': this.username, 'password': this.password};
-      this.userService.create(this.model)
-        .subscribe(
-          data => {
-            this.alertService.success('注册成功', true);
-            this.router.navigate(['/login']);
-          },
-          error => {
-            this.alertService.error(error);
-            this.loading = false;
-          });
+      if (this.invalidTwoPassword()) {
+        console.log('密码通不过校验');
+      } else {
+        // 当所有检查都通过了，去服务器申请登陆
+        this.loading = true;
+        this.submitted = false;
+        this.model = {'username': this.username, 'password': this.password};
+        this.userService.create(this.model)
+          .subscribe(
+            data => {
+              this.alertService.success('注册成功', true);
+              this.router.navigate(['/login']);
+            },
+            error => {
+              this.alertService.error(error);
+              this.loading = false;
+            });
+      }
+
     }
+
 
   }
 }

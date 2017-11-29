@@ -10,12 +10,12 @@
 }
 /*  矩形 */
 .help-info {
-  font: 0.9em "微软雅黑";
+  font: 0.75em "微软雅黑";
   color: #fff;
   background-color: #B22222;
   text-align: center;
   padding: 4px 15px;
-  width: 150px;/* 宽度根据字符数和大小自己定义 */
+  width: 170px;/* 宽度根据字符数和大小自己定义 */
   height: 30px;
   border: 1px solid #B22222;
   border-radius: 4px;

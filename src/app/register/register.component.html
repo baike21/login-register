@@ -40,7 +40,7 @@
     </div>
 
     <!-- Confirm Password -->
-    <div class="form-group" [ngClass]="{ 'has-error': invalidConfirmPassword() }">
+    <div class="form-group" [ngClass]="{ 'has-error': invalidConfirmPassword() || differentPassword() }">
       <div class="bubble-alert">
         <div *ngIf="invalidConfirmPassword()" class="help-info">密码不能为空或无效字符</div>
         <div *ngIf="differentPassword()" class="help-info">两次密码不一致</div>

@@ -202,26 +202,26 @@ export class LoginComponent implements OnInit {
     // 根据错误校验状态，关闭开启光标状态
     if (this.invalidUsername()) {
       // console.log('用户名通不过校验');
-    } else if (this.invalidPassword()) {
-      // console.log('密码通不过校验');
     } else {
-      // 当所有检查都通过了，去服务器申请登陆
-      this.loading = true;
-      this.submitted = false;
-      this.authenticationService.login(this.username, this.password)
-        .subscribe(
-          data => {
-            this.router.navigate([this.returnUrl]);
-            this.loading = false;
-          },
-          error => {
-            this.alertService.error(error);
-            this.loading = false;
-          });
+      if (this.invalidPassword()) {
+        // console.log('密码通不过校验');
+      } else {
+        // 当所有检查都通过了，去服务器申请登陆
+        this.loading = true;
+        this.submitted = false;
+        this.authenticationService.login(this.username, this.password)
+          .subscribe(
+            data => {
+              this.router.navigate([this.returnUrl]);
+              this.loading = false;
+            },
+            error => {
+              this.alertService.error(error);
+              this.loading = false;
+            });
+      }
     }
-
   }
-
 }
 
 

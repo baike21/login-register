@@ -19,7 +19,6 @@
                (blur)="usernameBlur()"
                name="username"
                [(ngModel)]="username"
-               #username
                [ngStyle]="setCurrentStyles()"
                autofocus />
       </div>
@@ -40,7 +39,6 @@
                (focus)="passwdFocus()"
                name="password"
                [(ngModel)]="password"
-               #password="ngModel"
                [ngStyle]="setCurrentPasswordStyles()"
                />
       </div>
